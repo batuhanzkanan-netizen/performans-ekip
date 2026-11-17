@@ -52,11 +52,24 @@ export async function start() {
       process.env.EXPO_PUBLIC_DEMO_AUTOSTART === "true"
     ) {
       await (await import("./demo")).login();
-      try {
-        await (await import("./task-link")).loadTaskLink();
-      } catch (error) {
-        reportError(error);
-      }
+      let importing = false;
+      const loadLink = async () => {
+        if (importing) return;
+        importing = true;
+        try {
+          await (await import("./task-link")).loadTaskLink();
+        } catch (error) {
+          reportError(error);
+        } finally {
+          importing = false;
+        }
+      };
+      await loadLink();
+      globalThis.addEventListener("hashchange", loadLink);
+      return () => {
+        off();
+        globalThis.removeEventListener("hashchange", loadLink);
+      };
     } else setState({ ready: true });
     return off;
   }
