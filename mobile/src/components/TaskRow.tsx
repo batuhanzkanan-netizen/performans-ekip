@@ -1,12 +1,6 @@
+import { Confirm as Alert } from "./confirm";
 import React, { useEffect, useRef, useState } from "react";
-import {
-  Alert,
-  Linking,
-  Platform,
-  Pressable,
-  TextInput,
-  View,
-} from "react-native";
+import { Linking, Platform, Pressable, TextInput, View } from "react-native";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { getState, useStore } from "../data/store";
 import * as api from "../data/service";

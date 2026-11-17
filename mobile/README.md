@@ -115,3 +115,7 @@ RNFirebase 26.4.2 sabitlenmiştir; iOS bağımlılıkları CocoaPods + static fr
 ## Bu teslimde doğrulananlar
 
 Mobil TypeScript kontrolü, lint ve 3 model testi geçti. iOS/Android JavaScript paketleri ile web önizleme export'u üretildi. Tarayıcı önizlemesinde örnek eğitmen ekleme, görev ekleme ve tamamlama çalıştırıldı. Firestore emülatöründe 5 erişim/şema testi ve depoda 8 birim testi geçti. Gerçek native derleme, Google/Apple girişi, TestFlight ve App Store yayını hesap yapılandırması tamamlanana kadar doğrulanmadı.
+
+## Kurulumsuz mobil önizleme
+
+GitHub Pages akışı Firebase ayarları eksikken bu uygulamanın web export'unu yayınlar. `EXPO_PUBLIC_DEMO_AUTOSTART=true` örnek verilerle doğrudan açılışı, `EXPO_PUBLIC_PREVIEW_BASE_URL=/performans-ekip` GitHub Pages alt yolunu ayarlar. Bu değerler native uygulamayı değiştirmez. Önizleme yerel cihaz depolaması kullanır. Canlı ekip verisi için Firebase ve native derleme kurulumu ayrıca tamamlanır.

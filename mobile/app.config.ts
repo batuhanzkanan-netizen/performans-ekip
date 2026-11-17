@@ -63,8 +63,13 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
       : []),
   ],
   extra: {
-    eas: { projectId: process.env.EXPO_PUBLIC_EAS_PROJECT_ID || "f6a47235-ec3b-4518-8593-7828a70270b1" },
+    eas: {
+      projectId:
+        process.env.EXPO_PUBLIC_EAS_PROJECT_ID ||
+        "f6a47235-ec3b-4518-8593-7828a70270b1",
+    },
     nativeConfigured: native,
   },
+  experiments: { baseUrl: process.env.EXPO_PUBLIC_PREVIEW_BASE_URL || "" },
   web: { bundler: "metro", output: "single", favicon: "./assets/favicon.png" },
 });

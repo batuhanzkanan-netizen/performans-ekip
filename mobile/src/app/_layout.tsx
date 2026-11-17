@@ -1,3 +1,4 @@
+import { Confirm as Alert } from "../components/confirm";
 import React, { useEffect, useState } from "react";
 import { Tabs } from "expo-router";
 import { StatusBar } from "expo-status-bar";
@@ -7,7 +8,6 @@ import {
   ScrollView,
   Platform,
   Text,
-  Alert,
 } from "react-native";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 import Ionicons from "@expo/vector-icons/Ionicons";
@@ -134,8 +134,8 @@ export default function Layout() {
               <View style={{ maxWidth: 360, gap: 14 }}>
                 <View style={styles.banner}>
                   <Label style={{ lineHeight: 22 }}>
-                    Expo Go önizlemesi örnek verilerle çalışır. Google/Apple
-                    girişi ve canlı ekip verileri özel derlemede açılır.
+                    Bu önizleme örnek verilerle çalışır. Google/Apple girişi ve
+                    canlı ekip verileri özel derlemede açılır.
                   </Label>
                 </View>
                 <Button

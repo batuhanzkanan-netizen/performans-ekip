@@ -1,3 +1,5 @@
+> **Tıklanabilir önizleme:** Firebase secret değerleri henüz eklenmemişse Pages akışı mobil uygulamanın örnek verili önizlemesini yayınlar. Önizleme yalnız cihazda saklanır; gerçek ekip verisine bağlanmaz. Altı Firebase secret değeri tamamlandığında aynı akış canlı web PWA'yı yayınlar.
+
 > **Mobil uygulama:** iOS/Android ve App Store hazırlığı `mobile/` klasöründedir. Expo Go, özel derleme ve TestFlight adımları için [mobil kurulum rehberini](mobile/README.md) aç.
 > **Ekip erişimi:** `config/access` içinde `editors` ve `viewers` listeleri kullanılır. Yalnız bu listelerdeki doğrulanmış hesaplar okuyabilir; editörler düzenler.
 
@@ -71,7 +73,7 @@ npm run build
 npm run preview
 ```
 
-Firebase ayarları eksikse veri yerine kurulum mesajı gösterilir. Gerçek `.env` olmadan da üretim derlemesi tamamlanır; Actions eksik secret varsa anlaşılır hata vererek yayını durdurur.
+Firebase ayarları eksikse veri yerine kurulum mesajı gösterilir. Gerçek `.env` olmadan da üretim derlemesi tamamlanır; Actions Firebase ayarları eksikse örnek verili mobil önizlemeyi yayınlar.
 
 ## Kullanım ve davranışlar
 

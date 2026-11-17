@@ -19,9 +19,11 @@ jobs:
         with:
           node-version: 22
           cache: npm
-      - run: npm ci
-      - run: npm test
-      - name: Firebase ayarlarını doğrula ve derle
+          cache-dependency-path: |
+            package-lock.json
+            mobile/package-lock.json
+      - name: Yayın türünü belirle
+        id: mode
         env:
           VITE_FIREBASE_API_KEY: ${{ secrets.VITE_FIREBASE_API_KEY }}
           VITE_FIREBASE_AUTH_DOMAIN: ${{ secrets.VITE_FIREBASE_AUTH_DOMAIN }}
@@ -30,12 +32,41 @@ jobs:
           VITE_FIREBASE_MESSAGING_SENDER_ID: ${{ secrets.VITE_FIREBASE_MESSAGING_SENDER_ID }}
           VITE_FIREBASE_APP_ID: ${{ secrets.VITE_FIREBASE_APP_ID }}
         run: |
-          node --input-type=module -e 'const keys=["API_KEY","AUTH_DOMAIN","PROJECT_ID","STORAGE_BUCKET","MESSAGING_SENDER_ID","APP_ID"]; const missing=keys.filter(k=>!process.env["VITE_FIREBASE_"+k]); if(missing.length){console.error("Eksik GitHub secrets: "+missing.map(k=>"VITE_FIREBASE_"+k).join(", "));process.exit(1)}'
-          npm run build
+          node --input-type=module -e 'import {appendFileSync} from "node:fs"; const keys=["API_KEY","AUTH_DOMAIN","PROJECT_ID","STORAGE_BUCKET","MESSAGING_SENDER_ID","APP_ID"]; const ready=keys.every(k=>process.env["VITE_FIREBASE_"+k]); appendFileSync(process.env.GITHUB_OUTPUT,"mode="+(ready?"live":"demo")+"\n"); console.log(ready?"Canlı web uygulaması hazırlanıyor.":"Örnek verili mobil önizleme hazırlanıyor.");'
+      - if: steps.mode.outputs.mode == 'live'
+        run: npm ci
+      - if: steps.mode.outputs.mode == 'live'
+        run: npm test
+      - name: Canlı web uygulamasını derle
+        if: steps.mode.outputs.mode == 'live'
+        env:
+          VITE_FIREBASE_API_KEY: ${{ secrets.VITE_FIREBASE_API_KEY }}
+          VITE_FIREBASE_AUTH_DOMAIN: ${{ secrets.VITE_FIREBASE_AUTH_DOMAIN }}
+          VITE_FIREBASE_PROJECT_ID: ${{ secrets.VITE_FIREBASE_PROJECT_ID }}
+          VITE_FIREBASE_STORAGE_BUCKET: ${{ secrets.VITE_FIREBASE_STORAGE_BUCKET }}
+          VITE_FIREBASE_MESSAGING_SENDER_ID: ${{ secrets.VITE_FIREBASE_MESSAGING_SENDER_ID }}
+          VITE_FIREBASE_APP_ID: ${{ secrets.VITE_FIREBASE_APP_ID }}
+        run: npm run build
+      - name: Mobil önizleme bağımlılıkları
+        if: steps.mode.outputs.mode == 'demo'
+        working-directory: mobile
+        run: npm ci
+      - name: Mobil önizlemeyi derle
+        if: steps.mode.outputs.mode == 'demo'
+        working-directory: mobile
+        env:
+          EXPO_PUBLIC_PREVIEW_BASE_URL: /performans-ekip
+          EXPO_PUBLIC_DEMO_AUTOSTART: "true"
+        run: |
+          npm run typecheck
+          npm test
+          npx expo export --platform web --clear
+          cp dist/index.html dist/404.html
+          touch dist/.nojekyll
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with:
-          path: dist
+          path: ${{ steps.mode.outputs.mode == 'demo' && 'mobile/dist' || 'dist' }}
   deploy:
     needs: build
     environment:

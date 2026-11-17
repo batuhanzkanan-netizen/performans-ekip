@@ -40,7 +40,9 @@ export async function start() {
     }),
   );
   if (previewOnly) {
-    setState({ ready: true });
+    if (Platform.OS === "web" && process.env.EXPO_PUBLIC_DEMO_AUTOSTART === "true") {
+      await (await import("./demo")).login();
+    } else setState({ ready: true });
     return off;
   }
   try {

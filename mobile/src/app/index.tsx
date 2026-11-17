@@ -1,6 +1,6 @@
+import { Confirm as Alert } from "../components/confirm";
 import React, { useEffect, useMemo, useState } from "react";
 import {
-  Alert,
   KeyboardAvoidingView,
   Platform,
   Pressable,

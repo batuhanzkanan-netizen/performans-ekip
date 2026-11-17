@@ -1,4 +1,5 @@
-import { Alert, Linking, ScrollView, Text, View } from "react-native";
+import { Confirm as Alert } from "../components/confirm";
+import { Linking, ScrollView, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useState } from "react";
 import { useStore, setState } from "../data/store";
