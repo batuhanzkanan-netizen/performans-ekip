@@ -4,6 +4,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   ...config,
   name: "Performans Academy Ekip",
   slug: "performans-academy-ekip",
+  owner: "batuhanzkanans-team",
   version: "1.0.0",
   scheme: "paekip",
   orientation: "default",
@@ -62,9 +63,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
       : []),
   ],
   extra: {
-    ...(process.env.EXPO_PUBLIC_EAS_PROJECT_ID
-      ? { eas: { projectId: process.env.EXPO_PUBLIC_EAS_PROJECT_ID } }
-      : {}),
+    eas: { projectId: process.env.EXPO_PUBLIC_EAS_PROJECT_ID || "f6a47235-ec3b-4518-8593-7828a70270b1" },
     nativeConfigured: native,
   },
   web: { bundler: "metro", output: "single", favicon: "./assets/favicon.png" },

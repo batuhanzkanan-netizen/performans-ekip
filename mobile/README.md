@@ -1,5 +1,9 @@
 # Performans Academy Ekip — iOS ve Android
 
+Expo projesi: https://expo.dev/accounts/batuhanzkanans-team/projects/performans-academy-ekip
+
+Proje kimliği ve sahibi `app.config.ts` içinde bağlıdır. `eas init` ile yeni proje oluşturma; mevcut proje kullanılır.
+
 Bu klasör Expo SDK 58, React Native ve TypeScript ile hazırlanan mobil uygulamadır. Web PWA deposunun kökünde korunur. Aynı Firestore görevlerini kullanırlar.
 
 ## Expo Go ile arayüz önizleme
@@ -60,9 +64,8 @@ Cloud Functions yayını için uygun Firebase faturalandırma planı gerekir. İ
 ```bash
 cd mobile
 npx eas-cli@latest login
-npx eas-cli@latest init
-# Proje kimliğini EXPO_PUBLIC_EAS_PROJECT_ID olarak ekle.
-# Dinamik app.config.ts kullanıldığından eas init dosyayı otomatik değiştiremeyebilir.
+# Proje kimliği app.config.ts içinde bağlıdır.
+# Kendi Expo hesabın bu takım projesine erişebilmelidir.
 npx eas-cli@latest build --platform ios --profile development
 npm run dev-client
 ```

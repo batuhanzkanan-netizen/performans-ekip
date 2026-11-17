@@ -1,6 +1,5 @@
 const fs = require("node:fs");
 const keys = [
-  "EXPO_PUBLIC_EAS_PROJECT_ID",
   "EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID",
   "EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID",
 ];
