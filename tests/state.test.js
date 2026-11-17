@@ -1,0 +1,13 @@
+import {test} from 'node:test';
+import assert from 'node:assert/strict';
+globalThis.location={hash:''};
+globalThis.navigator??={onLine:true};
+const {visibleTasks,escapeHTML,noteLink,overdue,today}=await import('../src/state.js');
+const tasks=[{id:'a',trainerId:'x',title:'A',priority:1,createdAt:1,done:false,due:null},{id:'b',trainerId:'x',title:'B',priority:3,createdAt:2,done:true,due:'2000-01-01'},{id:'c',trainerId:'y',title:'C',priority:3,createdAt:3,done:false,due:'2000-01-01'}];
+const s={tasks,tab:'all',trainerFilter:'all',priorityFilter:'all',sort:'added'};
+test('Tamamlananlar önem ve tarih sıralamasında altta kalır',()=>{assert.deepEqual(visibleTasks({...s,sort:'priority'}).map(t=>t.id),['c','a','b']);assert.deepEqual(visibleTasks({...s,sort:'due'}).map(t=>t.id),['c','a','b']);});
+test('Genel bakış filtreleri birlikte çalışır; eğitmen sekmesi bu filtrelerden etkilenmez',()=>{assert.deepEqual(visibleTasks({...s,trainerFilter:'x',priorityFilter:'3'}).map(t=>t.id),['b']);assert.deepEqual(visibleTasks({...s,tab:'y',trainerFilter:'x',priorityFilter:'1'}).map(t=>t.id),['c']);});
+test('Tamamlanan ve bugün bitecek görev gecikmiş sayılmaz',()=>{assert.equal(overdue(tasks[1]),false);assert.equal(overdue(tasks[2]),true);assert.equal(overdue({...tasks[0],due:today()}),false);});
+test('Metin HTML olarak çalıştırılmaz; yalnız HTTP/S linkleri açılır',()=>{assert.equal(escapeHTML('<img onerror="x">'),'&lt;img onerror=&quot;x&quot;&gt;');assert.equal(noteLink('javascript:alert(1)'),null);assert.equal(noteLink('Bak https://example.com/plan?a=1&b=2'),'https://example.com/plan?a=1&b=2');});
+test('Bozuk hash uygulamayı çökertmez',async()=>{const {readTab}=await import('../src/state.js');location.hash='#%E0%A4';assert.equal(readTab(),'all');location.hash='#egitmen-1';assert.equal(readTab(),'egitmen-1');});
+test('Giriş yapmadan görev verisi üretilmez; görüntüleyici mutasyon kontrolleri görmez',async()=>{const {state}=await import('../src/state.js');const {shell}=await import('../src/render/app.js');Object.assign(state,{authReady:true,user:null,configured:true,tasks,trainers:[{id:'x',name:'Test',order:1}],loaded:{tasks:true,trainers:true}});assert.ok(!shell().includes('data-id="a"'));Object.assign(state,{user:{email:'viewer@example.com'},editor:false,accessReady:true,tab:'all',trainerFilter:'all',priorityFilter:'all'});const html=shell();assert.ok(html.includes('Yalnız görüntüleme'));assert.ok(html.includes('readonly'));assert.ok(!html.includes('data-action="delete-task"'));assert.ok(!html.includes('data-action="add-trainer"'));assert.ok(!html.includes('id="new-task"'));});

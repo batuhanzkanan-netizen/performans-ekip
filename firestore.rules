@@ -1,0 +1,37 @@
+rules_version = '2';
+service cloud.firestore {
+ match /databases/{database}/documents {
+  function signedIn() { return request.auth != null; }
+  function editor() { return signedIn() && request.auth.token.email_verified == true && request.auth.token.email in get(/databases/$(database)/documents/config/access).data.editors; }
+  function trainerValid(d) {
+   return d.keys().hasAll(['name','order','createdAt']) && d.keys().hasOnly(['name','order','createdAt','deleting'])
+    && d.name is string && d.name.size() > 0 && d.name.size() <= 100
+    && d.order is number && d.createdAt is number && (!('deleting' in d) || d.deleting is bool);
+  }
+  function taskValid(d) {
+   return d.keys().hasAll(['title','trainerId','priority','due','done','doneAt','note','createdAt','updatedAt'])
+    && d.keys().hasOnly(['title','trainerId','priority','due','done','doneAt','note','createdAt','updatedAt'])
+    && d.title is string && d.title.size() > 0 && d.title.size() < 200
+    && d.trainerId is string && d.priority is int && d.priority >= 1 && d.priority <= 3
+    && (d.due == null || (d.due is string && d.due.matches('^[0-9]{4}-[0-9]{2}-[0-9]{2}$')))
+    && d.done is bool && (d.doneAt == null || d.doneAt is number)
+    && ((d.done && d.doneAt is number) || (!d.done && d.doneAt == null))
+    && d.note is string && d.note.size() <= 5000 && d.createdAt is number && d.updatedAt is number
+    && exists(/databases/$(database)/documents/trainers/$(d.trainerId))
+    && get(/databases/$(database)/documents/trainers/$(d.trainerId)).data.get('deleting', false) == false;
+  }
+  match /config/access { allow read: if signedIn(); allow write: if false; }
+  match /trainers/{id} {
+   allow read: if signedIn();
+   allow create: if editor() && trainerValid(request.resource.data);
+   allow update: if editor() && trainerValid(request.resource.data) && request.resource.data.createdAt == resource.data.createdAt;
+   allow delete: if editor() && resource.data.get('deleting', false) == true;
+  }
+  match /tasks/{id} {
+   allow read: if signedIn();
+   allow create: if editor() && taskValid(request.resource.data);
+   allow update: if editor() && taskValid(request.resource.data) && request.resource.data.createdAt == resource.data.createdAt;
+   allow delete: if editor();
+  }
+ }
+}
