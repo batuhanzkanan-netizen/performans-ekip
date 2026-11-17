@@ -65,10 +65,10 @@ export default function Tasks() {
     available = s.trainers.filter((t) => !t.deleting),
     selectedTrainer =
       available.find((t) => t.id === newTrainer)?.id || available[0]?.id || "";
-  const status = !s.online
-    ? "Çevrimdışı"
-    : s.demo
-      ? "Bu cihazdaki örnek veriler"
+  const status = s.demo
+    ? "Bu cihazdaki görevler"
+    : !s.online
+      ? "Çevrimdışı"
       : s.pending
         ? "Kaydediliyor…"
         : !s.loaded || s.cached
@@ -153,7 +153,7 @@ export default function Tasks() {
         <View style={styles.banner}>
           <Label style={{ fontSize: 12, lineHeight: 19 }}>
             {s.demo
-              ? "Önizleme · Yalnız bu cihazda kaydedilir. Ekip verileriyle bağlantısı yok."
+              ? "Önizleme · Görevler yalnız bu cihazda kaydedilir. Diğer cihazlarla eşitlenmez."
               : !s.online
                 ? "Son veriler gösteriliyor. Değişiklikler internet gelince kaydedilir."
                 : "Yalnız görüntüleme · Düzenleme için ekip yöneticisine ulaş."}

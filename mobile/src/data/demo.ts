@@ -1,6 +1,7 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { getState, setState, clearSession } from "./store";
 import { localDate } from "../domain/model";
+import { mergePackage } from "../domain/task-import";
 import type { Task, Trainer } from "../domain/model";
 const key = "pa-demo-v1";
 let sequence = Promise.resolve();
@@ -117,4 +118,10 @@ export async function removeTask(id: string) {
 export async function deleteAccount() {
   await AsyncStorage.removeItem(key);
   await logout();
+}
+
+export async function importTasks(data: unknown) {
+  const merged = mergePackage(getState(), data);
+  setState({ trainers: merged.trainers, tasks: merged.tasks });
+  await persist();
 }

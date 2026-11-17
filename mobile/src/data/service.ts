@@ -22,12 +22,19 @@ export function errorMessage(error: unknown) {
     code.includes("failed-precondition")
   )
     return "Hesabını silmek için yeniden giriş yapıp tekrar dene.";
-  if (code.includes("user-mismatch")) return "Bu hesaba ait giriş yöntemini ve e-posta adresini kullan.";
-  if (code.includes("too-many-requests")) return "Çok fazla deneme yapıldı. Biraz bekleyip tekrar dene.";
-  if (code.includes("invalid-credential")) return "Giriş doğrulanamadı. Yeniden giriş yap.";
-  if (code.includes("functions/not-found")) return "Hesap silme hizmeti kurulmamış. Ekip yöneticisine ulaş.";
-  if (code) return "İşlem tamamlanamadı. Yeniden dene; sürerse ekip yöneticisine ulaş.";
-  return error instanceof Error ? error.message : "İşlem tamamlanamadı. Yeniden dene.";
+  if (code.includes("user-mismatch"))
+    return "Bu hesaba ait giriş yöntemini ve e-posta adresini kullan.";
+  if (code.includes("too-many-requests"))
+    return "Çok fazla deneme yapıldı. Biraz bekleyip tekrar dene.";
+  if (code.includes("invalid-credential"))
+    return "Giriş doğrulanamadı. Yeniden giriş yap.";
+  if (code.includes("functions/not-found"))
+    return "Hesap silme hizmeti kurulmamış. Ekip yöneticisine ulaş.";
+  if (code)
+    return "İşlem tamamlanamadı. Yeniden dene; sürerse ekip yöneticisine ulaş.";
+  return error instanceof Error
+    ? error.message
+    : "İşlem tamamlanamadı. Yeniden dene.";
 }
 export function reportError(error: unknown) {
   const text = errorMessage(error);
@@ -40,8 +47,16 @@ export async function start() {
     }),
   );
   if (previewOnly) {
-    if (Platform.OS === "web" && process.env.EXPO_PUBLIC_DEMO_AUTOSTART === "true") {
+    if (
+      Platform.OS === "web" &&
+      process.env.EXPO_PUBLIC_DEMO_AUTOSTART === "true"
+    ) {
       await (await import("./demo")).login();
+      try {
+        await (await import("./task-link")).loadTaskLink();
+      } catch (error) {
+        reportError(error);
+      }
     } else setState({ ready: true });
     return off;
   }
