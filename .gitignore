@@ -4,3 +4,13 @@ dist/
 .env.*
 !.env.example
 *.log
+
+.expo/
+GoogleService-Info.plist
+google-services.json
+ios/
+android/
+*.ipa
+*.aab
+*.apk
+.expo-shared/

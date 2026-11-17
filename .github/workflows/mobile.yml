@@ -1,0 +1,60 @@
+name: Mobil uygulama kontrolleri
+on:
+  push:
+    branches: [main]
+    paths:
+      [
+        "mobile/**",
+        "functions/**",
+        "checks/**",
+        "firestore.rules",
+        ".github/workflows/mobile.yml",
+      ]
+  pull_request:
+    paths:
+      [
+        "mobile/**",
+        "functions/**",
+        "checks/**",
+        "firestore.rules",
+        ".github/workflows/mobile.yml",
+      ]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  mobile:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: mobile
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: mobile/package-lock.json
+      - run: npm ci
+      - run: npm run typecheck
+      - run: npm run lint
+      - run: npm test
+      - name: iOS ve Android JavaScript paketleri
+        run: |
+          npx expo export --platform ios --output-dir dist/ios
+          npx expo export --platform android --output-dir dist/android
+  security:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+      - run: npm ci
+      - run: npm test
+      - run: npm run test:rules

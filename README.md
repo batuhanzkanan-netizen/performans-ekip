@@ -1,3 +1,6 @@
+> **Mobil uygulama:** iOS/Android ve App Store hazırlığı `mobile/` klasöründedir. Expo Go, özel derleme ve TestFlight adımları için [mobil kurulum rehberini](mobile/README.md) aç.
+> **Ekip erişimi:** `config/access` içinde `editors` ve `viewers` listeleri kullanılır. Yalnız bu listelerdeki doğrulanmış hesaplar okuyabilir; editörler düzenler.
+
 # Performans Academy — Ekip Görev Takibi
 
 Türkçe, mobil öncelikli Vite + vanilla JavaScript PWA. Firebase Google Authentication, canlı Firestore verileri ve çevrimdışı IndexedDB önbelleği kullanır.
@@ -20,7 +23,7 @@ Authentication → Settings → Authorized domains bölümüne `batuhanzkanan-ne
 2. Data → Start collection: `config`, Document ID: `access`.
 3. `editors` adında **array** alanı oluştur. Her öğe **string** olmalı. Google hesabındaki e-posta adreslerini tam ve aynı büyük/küçük harfle ekle: ör. `isim@gmail.com`.
 4. Bu belge uygulamadan değiştirilemez; editör listesini Firebase Console'dan yönet.
-5. Giriş yapan herkes görevleri okuyabilir. Yalnız doğrulanmış ve listede bulunan e-postalar veri değiştirebilir. Giriş yapılmadan veri sorgulanmaz.
+5. Yalnız `editors` veya `viewers` listesine eklenmiş, doğrulanmış e-posta sahipleri görevleri okuyabilir. `editors` listesi düzenler; `viewers` listesi yalnız görüntüler. Giriş yapılmadan veri sorgulanmaz.
 
 CLI alternatifi: `npx firebase-tools login`, ardından `npx firebase-tools deploy --only firestore:rules --project PROJE_KIMLIGI`.
 

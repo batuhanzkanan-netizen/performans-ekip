@@ -2,6 +2,7 @@ rules_version = '2';
 service cloud.firestore {
  match /databases/{database}/documents {
   function signedIn() { return request.auth != null; }
+  function member() { return signedIn() && request.auth.token.email_verified == true && (request.auth.token.email in get(/databases/$(database)/documents/config/access).data.editors || request.auth.token.email in get(/databases/$(database)/documents/config/access).data.get('viewers', [])); }
   function editor() { return signedIn() && request.auth.token.email_verified == true && request.auth.token.email in get(/databases/$(database)/documents/config/access).data.editors; }
   function trainerValid(d) {
    return d.keys().hasAll(['name','order','createdAt']) && d.keys().hasOnly(['name','order','createdAt','deleting'])
@@ -20,15 +21,15 @@ service cloud.firestore {
     && exists(/databases/$(database)/documents/trainers/$(d.trainerId))
     && get(/databases/$(database)/documents/trainers/$(d.trainerId)).data.get('deleting', false) == false;
   }
-  match /config/access { allow read: if signedIn(); allow write: if false; }
+  match /config/access { allow read: if member(); allow write: if false; }
   match /trainers/{id} {
-   allow read: if signedIn();
+   allow read: if member();
    allow create: if editor() && trainerValid(request.resource.data);
    allow update: if editor() && trainerValid(request.resource.data) && request.resource.data.createdAt == resource.data.createdAt;
    allow delete: if editor() && resource.data.get('deleting', false) == true;
   }
   match /tasks/{id} {
-   allow read: if signedIn();
+   allow read: if member();
    allow create: if editor() && taskValid(request.resource.data);
    allow update: if editor() && taskValid(request.resource.data) && request.resource.data.createdAt == resource.data.createdAt;
    allow delete: if editor();
